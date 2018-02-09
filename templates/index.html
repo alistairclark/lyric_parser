@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-sm">
+        <h1 class="display-1 text-center"><strong>Search for artist</strong></h1>
+        <form>
+            <div class="form-group">
+                <input type="text" class="form-control" id="artistName" aria-describedby="artistNameHelp" placeholder="Enter artist name">
+            </div>
+        </form>
+
+        <div id="results">
+        </div>
+    </div>
+</div>
+<script>
+$("#artistName").keyup(
+    function updateSearch(e) {
+        var input = $("#artistName").val();
+
+        e.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: "/search?q=" + input,
+            success: function(result) {
+                var output = $("#results");
+                output.html(result);
+            }
+        });
+    }
+);
+</script>
+{% endblock %}

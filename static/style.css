@@ -1,0 +1,20 @@
+body {
+    background-color: #FCFCFC;
+}
+
+a:link, a:visited, a:hover {
+    color: #000000;
+    text-decoration: none;
+}
+
+li.result {
+    background-color: #FCFCFC
+}
+
+div.results-table {
+    padding: 50px;
+}
+
+#resultsChart {
+    padding: 50px;
+}

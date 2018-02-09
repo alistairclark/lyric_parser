@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="display-1 text-center"><strong>Results</strong></h1>
+<div class="row results">
+    <div class="col-md text-center"><p class="lead">Analyzing {{ data|length }} songs</p></div>
+    <!--<div class="col-md">-->
+        <!--<canvas id="resultsChart" width="200" height="200"></canvas>-->
+    <!--</div>-->
+    <!--<div class="col-md results-table">-->
+        <!--<ul class="list-group-flush">-->
+        <!--{% for result in data %}-->
+            <!--<li class="list-group-item result"><span><strong>{{ result["word"] }}</strong></span><span class="float-right">{{ result["count"] }}</span></li>-->
+        <!--{% endfor %}-->
+        <!--</ul>-->
+    <!--</div>-->
+</div>
+<div class="row">
+    <div class="col-md text-center">
+        <a href="/" role="button">Go back</a>
+    </div>
+</div>
+
+<script>
+<!--window.onload = function() {-->
+    <!--var ctx = $("#resultsChart");-->
+    <!--var resultsChart = new Chart(ctx, {-->
+        <!--type:"doughnut",-->
+        <!--data: {-->
+            <!--labels: [{% for result in data %}"{{ result['word'] }}"{% if not loop.last %},{% endif %}{% endfor %}],-->
+            <!--datasets: [{-->
+                <!--label: "frequency of words",-->
+                <!--data: [{% for result in data %}{{ result['count'] }}{% if not loop.last %},{% endif %}{% endfor %}],-->
+                <!--backgroundColor: [-->
+                    <!--'rgba(255, 99, 132, 0.2)',-->
+                    <!--'rgba(54, 162, 235, 0.2)',-->
+                    <!--'rgba(255, 206, 86, 0.2)',-->
+                    <!--'rgba(75, 192, 192, 0.2)',-->
+                    <!--'rgba(153, 102, 255, 0.2)',-->
+                    <!--'rgba(255, 159, 64, 0.2)',-->
+                    <!--'rgba(255, 206, 86, 0.2)',-->
+                    <!--'rgba(75, 192, 192, 0.2)',-->
+                    <!--'rgba(153, 102, 255, 0.2)',-->
+                    <!--'rgba(255, 159, 64, 0.2)'-->
+                <!--]-->
+            <!--}]-->
+        <!--},-->
+        <!--options: {-->
+            <!--legend: {-->
+                <!--display: false-->
+            <!--}-->
+        <!--}-->
+    <!--});-->
+<!--}-->
+</script>
+{% endblock %}
