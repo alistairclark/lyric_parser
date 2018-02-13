@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask
 from flask import jsonify
 from flask import render_template
@@ -5,7 +7,8 @@ from flask import request
 
 import requests
 
-from lyric_parser import LyricParser
+from song_list_builder import SongListBuilder
+from parser import Parser
 
 
 app = Flask(__name__)
@@ -45,10 +48,36 @@ def search():
 @app.route("/results")
 def results():
     id = request.args.get('q', '')
-    parser = LyricParser(id)
-    data = parser.fetch_song_data()
-    return render_template("results.html", data=data)
+    song_list_builder = SongListBuilder(id)
+    data = song_list_builder.fetch_song_data()
+    return render_template("results.html", data=data, completed=0)
 
-@app.route("/parse-this")
+@app.route("/parse")
 def parse():
-    return jsonify("")
+    total_count = request.values["total_count"]
+    completed = request.values["completed"]
+    all_lyrics = request.values["all_lyrics"]
+    if all_lyrics != "":
+        all_lyrics = json.loads(all_lyrics)
+    else:
+        all_lyrics = []
+
+    url = request.values["url"]
+
+    parser = Parser(all_lyrics)
+    parser.get_lyrics(url)
+
+    data = parser.process_lyrics()
+    html = render_template(
+        "result_data.html",
+        data=data,
+        completed=completed,
+        total_count=total_count
+    )
+
+    payload = {
+        "html": html,
+        "all_lyrics": json.dumps(parser.all_lyrics)
+    }
+
+    return jsonify(payload)
