@@ -4,7 +4,8 @@ import requests
 def search_genius(search_term):
     headers = {
         "Authorization": "Bearer {}".format(
-            "umuTypKle_tO2TrPvkM6FDqDiV1LIevm8QvHd92fJ4o-2Ui0h2yfnsyNwxeY9cUa")
+            "umuTypKle_tO2TrPvkM6FDqDiV1LIevm8QvHd92fJ4o-2Ui0h2yfnsyNwxeY9cUa"
+        )
     }
 
     response = requests.get(

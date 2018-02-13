@@ -6,7 +6,9 @@ class SongListBuilder:
         self.base_url = "https://api.genius.com"
         self.band_url = "/artists/{}".format(artist_id)
         self.headers = {
-            "Authorization": "Bearer {}".format("umuTypKle_tO2TrPvkM6FDqDiV1LIevm8QvHd92fJ4o-2Ui0h2yfnsyNwxeY9cUa")
+            "Authorization": "Bearer {}".format(
+                "umuTypKle_tO2TrPvkM6FDqDiV1LIevm8QvHd92fJ4o-2Ui0h2yfnsyNwxeY9cUa"
+            )
         }
         self.songs = []
 
@@ -20,7 +22,6 @@ class SongListBuilder:
         for song in result:
             if song["primary_artist"]["api_path"] == self.band_url:
                 self.songs.append(song["url"])
-
 
     def _get_songs(self, page):
         if page is None:

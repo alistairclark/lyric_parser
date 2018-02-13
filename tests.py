@@ -2,9 +2,9 @@ import unittest
 
 from flask import url_for
 
-from lyrics_parser.parser import Parser
-from lyrics_parser.song_list_builder import SongListBuilder
-from lyrics_parser.views import app
+from views import app
+from parser import Parser
+from song_list_builder import SongListBuilder
 
 
 class AppTestCase(unittest.TestCase):
@@ -16,15 +16,18 @@ class AppTestCase(unittest.TestCase):
 
     def test_index(self):
         response = self.app.get(url_for("index"))
+
         assert response.status_code == 200
         assert b"Search for an artist" in response.data
 
     def test_search(self):
         response = self.app.get(url_for("search", q="test"))
+
         assert response.status_code == 200
 
     def test_results(self):
         response = self.app.get(url_for("results", q=9605))
+
         assert response.status_code == 200
 
     def test_parse(self):
@@ -47,6 +50,7 @@ class SongListBuilderTestCase(unittest.TestCase):
 
     def test_fet_song_data(self):
         songs = self.song_list_builder.fetch_song_data()
+
         assert len(songs) > 0
 
 
@@ -58,14 +62,16 @@ class LyricParserTestCase(unittest.TestCase):
         self.parser.get_lyrics(
             "https://genius.com/Om-band-gebel-barkal-lyrics"
         )
-        assert self.parser.all_lyrics != ""
+
+        assert "timeless" in self.parser.all_lyrics and\
+               "seed" in self.parser.all_lyrics
 
     def test_process_lyrics(self):
         self.parser.all_lyrics = [
             "test", "test", "interesting", "words"
         ]
         data = self.parser.process_lyrics()
-        assert data[0]["word"] == "Test" and data[0]["count"] == 2
+        assert data[0][0] == "test" and data[0][1] == 2
 
 
 if __name__ == "__main__":
