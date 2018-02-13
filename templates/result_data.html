@@ -1,0 +1,51 @@
+<div class="row results">
+    {% if completed != total_count %}
+    <div class="col-md text-center"><p class="lead">Analysed {{ completed }} of {{ total_count }} songs</p></div>
+    {% else %}
+    <div class="col-md text-center"><p class="lead">Finished analysing {{ total_count}} songs</p></div>
+    {% endif %}
+</div>
+<div class="row">
+    <div class="col-md">
+        <canvas id="resultsChart" width="200" height="200"></canvas>
+    </div>
+    <div class="col-md results-table">
+        <ul class="list-group-flush">
+        {% for result in data %}
+            <li class="list-group-item result"><span><strong>{{ result["word"] }}</strong></span><span class="float-right">{{ result["count"] }}</span></li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+var ctx = $("#resultsChart");
+var resultsChart = new Chart(ctx, {
+    type:"doughnut",
+    data: {
+        labels: [{% for result in data %}"{{ result['word'] }}"{% if not loop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+            label: "frequency of words",
+            data: [{% for result in data %}{{ result['count'] }}{% if not loop.last %},{% endif %}{% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ]
+        }]
+    },
+    options: {
+        legend: {
+            display: false
+        },
+        animation: false
+    }
+});
+</script>

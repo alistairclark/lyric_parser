@@ -2,7 +2,7 @@
     <div class="col-sm" id="search-results" style="background-color:#FFE7BA;">
         <ul class="list-group-flush">
         {% for key in data %}
-            <a href="/results?q={{ key }}" style="background-color:#FFE7BA;" class="list-group-item"><img style="width:100px; height:100px; overflow:hidden; margin: 50px;" src="{{ data[key]['image_url'] }}"><strong>{{ data[key]["name"] }}</strong></a>
+            <a href="{{ url_for('results', q=key) }}" style="background-color:#FFE7BA;" class="list-group-item"><img style="width:100px; height:100px; overflow:hidden; margin: 50px;" src="{{ data[key]['image_url'] }}"><strong>{{ data[key]["name"] }}</strong></a>
         {% endfor %}
         </ul>
     </div>
