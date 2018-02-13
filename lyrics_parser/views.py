@@ -1,39 +1,14 @@
 import json
 
-from flask import Flask
 from flask import jsonify
 from flask import render_template
 from flask import request
 
-import requests
+from lyrics_parser import app
+from lyrics_parser.parser import Parser
+from lyrics_parser.song_list_builder import SongListBuilder
+from lyrics_parser.helpers import search_genius
 
-from song_list_builder import SongListBuilder
-from parser import Parser
-
-
-app = Flask(__name__)
-
-def search_genius(search_term):
-    headers = {
-        "Authorization": "Bearer {}".format(
-            "umuTypKle_tO2TrPvkM6FDqDiV1LIevm8QvHd92fJ4o-2Ui0h2yfnsyNwxeY9cUa")
-    }
-
-    response = requests.get(
-        "https://api.genius.com/search?q={}".format(search_term),
-        headers=headers
-    )
-
-    results = response.json()["response"]["hits"]
-    data = {}
-
-    for result in results:
-        data[result["result"]["primary_artist"]["id"]] = {
-            "name": result["result"]["primary_artist"]["name"],
-            "image_url": result["result"]["primary_artist"]["image_url"]
-        }
-
-    return data
 
 @app.route("/")
 def index():

@@ -2,9 +2,9 @@ import unittest
 
 from flask import url_for
 
-from app import app
-from song_list_builder import SongListBuilder
-from parser import Parser
+from lyrics_parser.parser import Parser
+from lyrics_parser.song_list_builder import SongListBuilder
+from lyrics_parser.views import app
 
 
 class AppTestCase(unittest.TestCase):
