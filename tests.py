@@ -1,4 +1,5 @@
 import unittest
+import json
 
 from flask import url_for
 
@@ -41,7 +42,11 @@ class AppTestCase(unittest.TestCase):
             )
         )
 
+        json_data = json.loads(response.data)
+
         assert response.status_code == 200
+        assert "all_lyrics" in json_data.keys()
+        assert "html" in json_data.keys()
 
 
 class SongListBuilderTestCase(unittest.TestCase):
@@ -70,6 +75,7 @@ class LyricParserTestCase(unittest.TestCase):
         self.parser.all_lyrics = [
             "test", "test", "interesting", "words"
         ]
+
         data = self.parser.process_lyrics()
         assert data[0][0] == "test" and data[0][1] == 2
 
