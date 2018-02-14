@@ -14,19 +14,27 @@
     </div>
 </div>
 <script>
+var delayTimer;
+
 $("#artistName").keyup(
     function updateSearch(e) {
-        var input = $("#artistName").val();
-
         e.preventDefault();
-        $.ajax({
-            type: "GET",
-            url: "/search?q=" + input,
-            success: function(result) {
-                var output = $("#results");
-                output.html(result);
+
+        clearTimeout(delayTimer);
+
+        delayTimer = setTimeout(function() {
+            var input = $("#artistName").val();
+            if (input.length > 1) {
+                var request = $.ajax({
+                    type: "GET",
+                    url: "/search?q=" + input,
+                    success: function(result) {
+                        var output = $("#results");
+                        output.html(result);
+                    }
+                });
             }
-        });
+         }, 500);
     }
 );
 </script>
