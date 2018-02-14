@@ -128,15 +128,15 @@ class Parser:
     def _prepare_string(self, lyrics):
         no_punctuation = re.sub(r"[^\w\d'\s]+", '', lyrics)
         lemmatized = [
-            Word(w.lower()).lemmatize() for w in no_punctuation.split()
+            Word(w.lower()).lemmatize().capitalize() for w in no_punctuation.split()
         ]
 
         return lemmatized
 
     def _remove_common_words(self):
         self.all_lyrics = [
-            word for word in self.all_lyrics if
-            word not in MOST_COMMON_WORDS
+            word for word in self.all_lyrics
+            if word.lower() not in MOST_COMMON_WORDS
         ]
 
     def get_lyrics(self, url):
