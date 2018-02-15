@@ -27,9 +27,12 @@ class AppTestCase(unittest.TestCase):
         assert response.status_code == 200
 
     def test_results(self):
-        response = self.app.get(url_for("results", q=9605))
+        response = self.app.get(
+            url_for("results", artist_id=9605, artist_name="Om (band)")
+        )
 
         assert response.status_code == 200
+        assert b"Om (band)" in response.data
 
     def test_parse(self):
         response = self.app.get(
@@ -68,8 +71,8 @@ class LyricParserTestCase(unittest.TestCase):
             "https://genius.com/Om-band-gebel-barkal-lyrics"
         )
 
-        assert "timeless" in self.parser.all_lyrics and\
-               "seed" in self.parser.all_lyrics
+        assert "Timeless" in self.parser.all_lyrics and\
+               "Seed" in self.parser.all_lyrics
 
     def test_process_lyrics(self):
         self.parser.all_lyrics = [

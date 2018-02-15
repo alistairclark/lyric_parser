@@ -26,11 +26,12 @@ def search():
 
 @app.route("/results")
 def results():
-    id = request.args.get('q', '')
+    id = request.args.get('artist_id', '')
+    artist_name = request.args.get('artist_name', '')
     song_list_builder = SongListBuilder(id)
     data = song_list_builder.fetch_song_data()
 
-    return render_template("results.html", data=data, completed=0)
+    return render_template("results.html", artist_name=artist_name, data=data, completed=0)
 
 @app.route("/parse")
 def parse():
