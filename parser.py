@@ -3,7 +3,6 @@ from collections import Counter
 
 import requests
 from bs4 import BeautifulSoup
-from textblob import Word
 
 
 MOST_COMMON_WORDS = [
@@ -126,12 +125,7 @@ class Parser:
         return soup.find_all("div", {"class": "lyrics"})[0].get_text()
 
     def _prepare_string(self, lyrics):
-        no_punctuation = re.sub(r"[^\w\d'\s]+", '', lyrics)
-        lemmatized = [
-            Word(w.lower()).lemmatize().capitalize() for w in no_punctuation.split()
-        ]
-
-        return lemmatized
+        return re.sub(r"[^\w\d'\s]+", '', lyrics)
 
     def _remove_common_words(self):
         self.all_lyrics = [

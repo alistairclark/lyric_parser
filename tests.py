@@ -72,7 +72,7 @@ class LyricParserTestCase(unittest.TestCase):
         )
 
         assert "Timeless" in self.parser.all_lyrics and\
-               "Seed" in self.parser.all_lyrics
+               "Seeds" in self.parser.all_lyrics
 
     def test_process_lyrics(self):
         self.parser.all_lyrics = [
