@@ -5,3 +5,6 @@ threadsafe: true
 handlers:
 - url: /.*
   script: views.app
+
+env_variables:
+  NLTK_DATA: "/home/alistairclark89/nltk_data"
