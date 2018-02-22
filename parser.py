@@ -1,147 +1,134 @@
-import re
 from collections import Counter
+from functools import reduce
+import re
+from statistics import mean
 
-import requests
 from bs4 import BeautifulSoup
+from nltk.corpus import wordnet
+import requests
+from textblob import TextBlob
+from textblob import Word
 
-
-MOST_COMMON_WORDS = [
-        "a",
-        "about",
-        "all",
-        "also",
-        "and",
-        "as",
-        "at",
-        "be",
-        "because",
-        "but",
-        "by",
-        "can",
-        "come",
-        "could",
-        "day",
-        "do",
-        "even",
-        "find",
-        "first",
-        "for",
-        "from",
-        "get",
-        "give",
-        "go",
-        "have",
-        "he",
-        "her",
-        "here",
-        "him",
-        "his",
-        "how",
-        "I",
-        "if",
-        "in",
-        "into",
-        "it",
-        "its",
-        "just",
-        "know",
-        "like",
-        "look",
-        "make",
-        "man",
-        "many",
-        "me",
-        "more",
-        "my",
-        "new",
-        "no",
-        "not",
-        "now",
-        "of",
-        "on",
-        "one",
-        "only",
-        "or",
-        "other",
-        "our",
-        "out",
-        "people",
-        "say",
-        "see",
-        "she",
-        "so",
-        "some",
-        "take",
-        "tell",
-        "than",
-        "that",
-        "the",
-        "their",
-        "them",
-        "then",
-        "there",
-        "these",
-        "they",
-        "thing",
-        "think",
-        "this",
-        "those",
-        "time",
-        "to",
-        "two",
-        "up",
-        "use",
-        "very",
-        "want",
-        "way",
-        "we",
-        "well",
-        "what",
-        "when",
-        "which",
-        "who",
-        "will",
-        "with",
-        "would",
-        "year",
-        "you",
-        "your",
-        "[verse]"
-    ]
+from helpers import STOP_WORDS
 
 
 class Parser:
-    def __init__(self, lyrics):
+    def __init__(self, songs):
+        # Set authorization header in order to use Genius API
+        # (https://docs.genius.com/)
         self.headers = {
             "Authorization": "Bearer {}".format(
                 "umuTypKle_tO2TrPvkM6FDqDiV1LIevm8QvHd92fJ4o-2Ui0h2yfnsyNwxeY9cUa"
             )
         }
-        self.all_lyrics = lyrics if lyrics != "" else []
-        self.data = []
 
-    def _make_soup(self, response):
+        self.songs = songs
+
+    def _get_lyrics_and_title(self, response):
+        """
+        Parse the content of an HTTP response (using BeautifulSoup) and get
+        the lyrics and title for the song.
+        """
         soup = BeautifulSoup(response.text, "html.parser")
-        return soup.find_all("div", {"class": "lyrics"})[0].get_text()
 
-    def _prepare_string(self, lyrics):
-        return re.sub(r"[^\w\d'\s]+", '', lyrics)
+        title = soup.find_all(
+            "h1", {"class": "header_with_cover_art-primary_info-title"}
+        )[0].get_text()
 
-    def _remove_common_words(self):
-        self.all_lyrics = [
-            word for word in self.all_lyrics
-            if word.lower() not in MOST_COMMON_WORDS
-        ]
+        lyrics = soup.find_all("div", {"class": "lyrics"})[0].get_text()
+
+        return title, lyrics
+
+    def _format_word(self, word):
+        """
+        Lemmatize (https://en.wikipedia.org/wiki/Lemma_(morphology)),
+        capitalize, and remove punctuation (other than apostrophes).
+        """
+        punctuation_stripped = re.sub(r"[^\w\d'\s]+", '', word)
+        lemmatized = Word(punctuation_stripped).lemmatize()
+        capitalized = lemmatized.capitalize()
+
+        return capitalized
+
+    def _remove_common_words(self, lyrics):
+        return [word for word in lyrics.split() if word.lower() not in STOP_WORDS]
+
+    def _prepare_lyrics(self, lyrics):
+        """
+        Remove common English words from lyrics, remove blank items, and format
+        the remaining words.
+        """
+        uncommon_words = self._remove_common_words(lyrics)
+        processed_string = list(map(
+            self._format_word,
+            uncommon_words
+        ))
+
+        strip_blanks = list(
+            filter(lambda x : x.strip() != "", processed_string)
+        )
+
+        return strip_blanks
+
+
+    def _analyse_sentiment(self, lyrics):
+        """
+        Break the lyrics down into TextBlob Sentence objects. Create a list
+        of the Sentiments for those Sentences. Return the mean polarity and
+        subjectivity of the song.
+        """
+        sentences = TextBlob(lyrics).sentences
+        sentiments = [sentence.sentiment for sentence in sentences]
+
+        amean_polarity = mean(
+            [sentiment.polarity for sentiment in sentiments]
+        )
+
+        mean_subjectivity = mean(
+            [sentiment.subjectivity for sentiment in sentiments]
+        )
+
+        return amean_polarity, mean_subjectivity
+
+    def _analyse_themes(self, lyrics):
+        """
+        Create a list of Synsets (http://www.nltk.org/howto/wordnet.html),
+        find the most common hypernyms (https://en.wikipedia.org/wiki/Hyponymy_and_hypernymy),
+        and count them and return the 5 most common.
+        """
+        synsets = []
+        for word in lyrics:
+            synsets.extend(wordnet.synsets(word))
+
+        hypernyms = []
+        for synset in synsets:
+            hypernyms.extend(synset.hypernyms())
+
+        # Return the name of the first lemma of each hypernym (so we can
+        # deal with English words)
+        hypernym_lemmas = [x.lemma_names()[0] for x in hypernyms]
+
+        counter = Counter(hypernym_lemmas)
+        return counter.most_common(3)
+
+    def _get_word_frequencies(self, words):
+        return Counter(words)
 
     def get_lyrics(self, url):
         response = requests.get(url, headers=self.headers)
-        lyrics = self._make_soup(response)
-        prepared_lyrics = self._prepare_string(lyrics)
+        title, lyrics = self._get_lyrics_and_title(response)
+        words = self._prepare_lyrics(lyrics)
 
-        self.all_lyrics.extend(prepared_lyrics)
+        self.songs[title] = {
+            "word frequencies": self._get_word_frequencies(words),
+            "lyrics": lyrics,
+            "sentiment": self._analyse_sentiment(lyrics),
+            "themes": self._analyse_themes(words)
+        }
 
-    def process_lyrics(self):
-        self._remove_common_words()
-        data = Counter(self.all_lyrics)
+    def process_all_lyrics(self):
+        counter = Counter([])
+        for key, value in self.songs.items():
+            counter += value["word frequencies"]
 
-        return data.most_common(10)
+        return counter.most_common(10)

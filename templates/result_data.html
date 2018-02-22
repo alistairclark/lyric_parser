@@ -17,6 +17,28 @@
         </ul>
     </div>
 </div>
+<div class="row">
+    <div class="col-md">
+        <ul class="list-group-flush">
+        {% for key, value in songs.items() %}
+            <li class="list-group-item result">
+                <a><strong>{{ key }}</strong></a>
+                <div>
+                    <a>Themes:</a>
+                    {% for theme in value["themes"] %}
+                    <a>{{ theme[0] }} </a>
+                    {% endfor %}
+                </div>
+                <div>
+                    <a>Sentiment</a>
+                    <a>Polarity: {{ value["sentiment"][0] }}</a>
+                    <a>Subjectivity: {{ value["sentiment"][1] }}</a>
+                </div>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
 
 <script>
 var ctx = $("#resultsChart");

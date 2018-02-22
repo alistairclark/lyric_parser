@@ -50,6 +50,7 @@ class AppTestCase(unittest.TestCase):
         assert response.status_code == 200
         assert "all_lyrics" in json_data.keys()
         assert "html" in json_data.keys()
+        assert "songs" in json_data.keys()
 
 
 class SongListBuilderTestCase(unittest.TestCase):
@@ -71,16 +72,25 @@ class LyricParserTestCase(unittest.TestCase):
             "https://genius.com/Om-band-gebel-barkal-lyrics"
         )
 
-        assert "Timeless" in self.parser.all_lyrics and\
-               "Seeds" in self.parser.all_lyrics
+        assert "Gebel Barkal" in self.parser.songs.keys()
+        assert "sentiment" in self.parser.songs["Gebel Barkal"].keys()
+        assert "themes" in self.parser.songs["Gebel Barkal"].keys()
+        assert "word frequencies" in self.parser.songs["Gebel Barkal"].keys()
 
     def test_process_lyrics(self):
-        self.parser.all_lyrics = [
-            "test", "test", "interesting", "words"
-        ]
+        self.parser.get_lyrics(
+            "https://genius.com/Om-band-gebel-barkal-lyrics"
+        )
+        self.parser.get_lyrics(
+            "https://genius.com/Om-band-gebel-barkal-lyrics"
+        )
+        self.parser.get_lyrics(
+            "https://genius.com/Om-band-gebel-barkal-lyrics"
+        )
 
-        data = self.parser.process_lyrics()
-        assert data[0][0] == "test" and data[0][1] == 2
+        data = self.parser.process_all_lyrics()
+
+        assert data[0][0] == "Series" and data[0][1] == 3
 
 
 if __name__ == "__main__":

@@ -38,24 +38,28 @@ def parse():
     total_count = request.values["total_count"]
     completed = request.values["completed"]
     url = request.values["url"]
-    all_lyrics = request.values["all_lyrics"]
+    songs = request.values["songs"]
 
-    if all_lyrics != "":
-        all_lyrics = json.loads(all_lyrics)
+    if songs != "":
+        songs = json.loads(songs)
     else:
-        all_lyrics = []
+        songs = {}
 
-    parser = Parser(all_lyrics)
+    parser = Parser(songs)
     parser.get_lyrics(url)
-    data = parser.process_lyrics()
+
+    data = parser.process_all_lyrics()
 
     html = render_template(
         "result_data.html",
         data=data,
         completed=completed,
-        total_count=total_count
+        total_count=total_count,
+        songs=parser.songs
     )
 
-    payload = {"html": html, "all_lyrics": json.dumps(parser.all_lyrics)}
-
+    payload = {
+        "html": html,
+        "songs": json.dumps(parser.songs)
+    }
     return jsonify(payload)

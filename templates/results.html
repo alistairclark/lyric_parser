@@ -12,12 +12,12 @@
     var urls = [{% for result in data %}"{{ result }}"{% if not loop.last %},{% endif %}{% endfor %}];
     var counter = 1
 
-    function parseLyrics(i, urls, all_lyrics) {
+    function parseLyrics(i, urls, songs) {
         counter++;
         data = {
             total_count: {{ data|length }},
             completed: counter,
-            all_lyrics: all_lyrics,
+            songs: songs,
             url: urls[i]
         };
 
@@ -25,7 +25,7 @@
             var output = $("#results");
             output.html(result["html"]);
 
-            lyrics = result["all_lyrics"];
+            lyrics = result["songs"];
 
             if ((i + 1) < urls.length) {
                 parseLyrics(i + 1, urls, lyrics);
