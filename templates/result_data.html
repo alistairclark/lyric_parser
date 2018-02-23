@@ -10,30 +10,62 @@
         <canvas id="resultsChart" width="200" height="200"></canvas>
     </div>
     <div class="col-md results-table">
-        <ul class="list-group-flush">
-        {% for result in data %}
+        <h4 class="display-6 text-center">Most common interesting* words</h4>
+        <ul class="list-group-flush" style="padding-top:20px">
+        {% for result in data["word frequencies"] %}
             <li class="list-group-item result"><span><strong>{{ result[0] }}</strong></span><span class="float-right">{{ result[1] }}</span></li>
         {% endfor %}
         </ul>
+        <p class="lead text-center">* Excluding common English words</p>
     </div>
 </div>
+
 <div class="row">
+    <div class="col-md-6">
+        <h4 class="display-6 text-enter">Common concepts</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <canvas id="themeFrequencies" width="100" height="100"></canvas>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-group-flush">
+                {% for theme in data["theme frequencies"] %}
+                    <li class="list-group-item result"><span><strong>{{ theme[0] }}</strong></span><span class="float-right">{{ theme[1] }}</span></li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <h4 class="display-6 text-enter">Average positivity</h4>
+        <canvas id="polarityChart" width="50" height="50"></canvas>
+    </div>
+    <div class="col-md-3">
+        <h4 class="display-6 text-enter">Average subjectivity</h4>
+        <canvas id="subjectivityChart" width="50" height="50"></canvas>
+    </div>
+</div>
+
+<div class="row" style="padding-top:50px;">
     <div class="col-md">
+        <h4 class="display-6 text-center">Analysis of individual songs</h4>
         <ul class="list-group-flush">
         {% for key, value in songs.items() %}
             <li class="list-group-item result">
                 <a><strong>{{ key }}</strong></a>
                 <div>
-                    <a>Themes:</a>
+                    <a>Concepts:</a>
                     {% for theme in value["themes"] %}
-                    <a>{{ theme[0] }} </a>
+                    <a>{{ theme[0] }}{{ "," if not loop.last }}</a>
                     {% endfor %}
                 </div>
+                {% if value["sentiment"][0] != 0.0 or value["sentiment"][1] != 0.0 %}
                 <div>
-                    <a>Sentiment</a>
-                    <a>Polarity: {{ value["sentiment"][0] }}</a>
-                    <a>Subjectivity: {{ value["sentiment"][1] }}</a>
+                    <a>Tone:</a>
+                    {% if value["sentiment"][0] != 0.0 %}<a>{% if value["sentiment"][0] > 0 %}Positive{% else %}Negative{% endif %}</a>{% endif %}
+                    {% if value["sentiment"][1] != 0.0 %}<a>{% if value["sentiment"][1] > 0.5 %}Subjective{% else %}Objective{% endif %}</a>{% endif %}
                 </div>
+                {% endif %}
             </li>
         {% endfor %}
         </ul>
@@ -45,10 +77,9 @@ var ctx = $("#resultsChart");
 var resultsChart = new Chart(ctx, {
     type:"doughnut",
     data: {
-        labels: [{% for result in data %}"{{ result[0] }}"{% if not loop.last %},{% endif %}{% endfor %}],
         datasets: [{
             label: "frequency of words",
-            data: [{% for result in data %}{{ result[1] }}{% if not loop.last %},{% endif %}{% endfor %}],
+            data: [{% for result in data["word frequencies"] %}{{ result[1] }}{% if not loop.last %},{% endif %}{% endfor %}],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
@@ -70,4 +101,108 @@ var resultsChart = new Chart(ctx, {
         animation: false
     }
 });
+
+var themesCtx = $("#themeFrequencies");
+var themesChart = new Chart(themesCtx, {
+    type:"doughnut",
+    data: {
+        datasets: [{
+            label: "frequency of themes",
+            data: [{% for theme in data["theme frequencies"] %}{{ theme[1]}}{% if not loop.last %},{% endif %}{% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)'
+            ]
+        }]
+    },
+    options: {
+        legend: {
+            display: false
+         },
+         animation: false
+    }
+});
+
+var polarityCtx = $("#polarityChart");
+var polarityChart = new Chart(polarityCtx, {
+    type:"horizontalBar",
+    data: {
+        datasets: [{
+            label: "polarity",
+            data: [{{ data["polarity"] }}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)'
+            ]
+        }]
+    },
+    options: {
+        legend: {
+            display: false
+         },
+         animation: false,
+        scales: {
+            xAxes: [{
+                ticks: {
+                    scaleOverride: true,
+                    scaleSteps: 2,
+                    min: -1.0,
+                    max: 1.0,
+                    callback: function(value, index, values) {
+                        if (value == -1.0) {
+                            return "Negative";
+                        }
+                        else if (value == 0.0) {
+                            return "Neutral";
+                        }
+                        else if (value == 1.0) {
+                            return "Positive";
+                        }
+                    }
+                }
+            }]
+        }
+    }
+});
+
+var subjectivityCtx = $("#subjectivityChart");
+var subjectivityChart = new Chart(subjectivityCtx, {
+    type:"horizontalBar",
+    data: {
+        datasets: [{
+            label: "subjectivity",
+            data: [{{ data["subjectivity"] }}],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.2)'
+            ]
+        }]
+    },
+    options: {
+        legend: {
+            display: false
+         },
+        animation: false,
+        scales: {
+            xAxes: [{
+                ticks: {
+                    scaleOverride: true,
+                    scaleSteps: 1,
+                    min: 0.0,
+                    max: 1.0,
+                    callback: function(value, index, values) {
+                        if (value == 0.0) {
+                            return "Objective"
+                        }
+                        else if (value == 1.0) {
+                            return "Subjective"
+                        }
+                    }
+                }
+            }]
+        }
+    }
+});
+
 </script>

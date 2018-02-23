@@ -1,12 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 class="display-3 text-center"><strong>Results for {{ artist_name }}</strong></h1>
-<div id="results"></div>
-<div class="row">
-    <div class="col-md text-center">
-        <a href="/" role="button">Go back</a>
-    </div>
-</div>
+<h1 class="display-6 text-center"><strong>Results for {{ artist_name }}</strong></h1>
+<div id="results"><p class="lead text-center">Loading...</p></div>
 
 <script>
     var urls = [{% for result in data %}"{{ result }}"{% if not loop.last %},{% endif %}{% endfor %}];

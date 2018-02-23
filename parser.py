@@ -80,7 +80,7 @@ class Parser:
         sentences = TextBlob(lyrics).sentences
         sentiments = [sentence.sentiment for sentence in sentences]
 
-        amean_polarity = mean(
+        mean_polarity = mean(
             [sentiment.polarity for sentiment in sentiments]
         )
 
@@ -88,7 +88,7 @@ class Parser:
             [sentiment.subjectivity for sentiment in sentiments]
         )
 
-        return amean_polarity, mean_subjectivity
+        return mean_polarity, mean_subjectivity
 
     def _analyse_themes(self, lyrics):
         """
@@ -106,13 +106,37 @@ class Parser:
 
         # Return the name of the first lemma of each hypernym (so we can
         # deal with English words)
-        hypernym_lemmas = [x.lemma_names()[0] for x in hypernyms]
+        hypernym_lemmas = [
+            x.lemma_names()[0].replace("_", " ").capitalize() for x in hypernyms
+        ]
 
         counter = Counter(hypernym_lemmas)
         return counter.most_common(3)
 
     def _get_word_frequencies(self, words):
         return Counter(words)
+
+    def _get_mean_polarity(self):
+        polarities = []
+        for key, value in self.songs.items():
+            if value["sentiment"][0] != '':
+                polarities.append(float(value["sentiment"][0]))
+
+        if len(polarities) > 0:
+            return mean(polarities)
+        else:
+            return None
+
+    def _get_mean_subjectivity(self):
+        subjectivities = []
+        for key, value in self.songs.items():
+            if value["sentiment"][1] != '':
+                subjectivities.append(float(value["sentiment"][1]))
+
+        if len(subjectivities) > 0:
+            return mean(subjectivities)
+        else:
+            return None
 
     def get_lyrics(self, url):
         response = requests.get(url, headers=self.headers)
@@ -131,4 +155,21 @@ class Parser:
         for key, value in self.songs.items():
             counter += value["word frequencies"]
 
-        return counter.most_common(10)
+        polarity = self._get_mean_polarity()
+        subjectivity = self._get_mean_subjectivity()
+
+        themes = []
+        for key, value in self.songs.items():
+            string_only = [theme[0] for theme in value["themes"]]
+            themes.extend(string_only)
+
+        print(themes)
+
+        data = {
+            "word frequencies": counter.most_common(10),
+            "polarity": polarity,
+            "subjectivity": subjectivity,
+            "theme frequencies": Counter(themes).most_common(5)
+        }
+
+        return data
