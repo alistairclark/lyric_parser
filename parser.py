@@ -3,9 +3,9 @@ from functools import reduce
 import re
 from statistics import mean
 
-from bs4 import BeautifulSoup
 from nltk.corpus import wordnet
 import requests
+import requests_html
 from textblob import TextBlob
 from textblob import Word
 
@@ -24,18 +24,16 @@ class Parser:
 
         self.songs = songs
 
-    def _get_lyrics_and_title(self, response):
-        """
-        Parse the content of an HTTP response (using BeautifulSoup) and get
-        the lyrics and title for the song.
-        """
-        soup = BeautifulSoup(response.text, "html.parser")
+    def _get_lyrics_and_title(self, url):
+        session = requests_html.Session()
+        session.headers = self.headers
+        response = session.get(url)
+        title = response.html.find(
+            ".header_with_cover_art-primary_info-title",
+            first=True
+        ).text
 
-        title = soup.find_all(
-            "h1", {"class": "header_with_cover_art-primary_info-title"}
-        )[0].get_text()
-
-        lyrics = soup.find_all("div", {"class": "lyrics"})[0].get_text()
+        lyrics = response.html.find(".lyrics", first=True).text
 
         return title, lyrics
 
@@ -94,7 +92,7 @@ class Parser:
         """
         Create a list of Synsets (http://www.nltk.org/howto/wordnet.html),
         find the most common hypernyms (https://en.wikipedia.org/wiki/Hyponymy_and_hypernymy),
-        and count them and return the 5 most common.
+        count them and return the 5 most common.
         """
         synsets = []
         for word in lyrics:
@@ -139,8 +137,7 @@ class Parser:
             return None
 
     def get_lyrics(self, url):
-        response = requests.get(url, headers=self.headers)
-        title, lyrics = self._get_lyrics_and_title(response)
+        title, lyrics = self._get_lyrics_and_title(url)
         words = self._prepare_lyrics(lyrics)
 
         self.songs[title] = {
