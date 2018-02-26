@@ -109,8 +109,8 @@ class Parser:
         for synset in synsets:
             hypernyms.extend(synset.hypernyms())
 
-        # Return the name of the first lemma of each hypernym (so we can
-        # deal with English words)
+        # Return the name of the first lemma (https://en.wikipedia.org/wiki/Lemma_(morphology))
+        # of each hypernym (so we can deal with English words)
         hypernym_lemmas = [
             x.lemma_names()[0].replace("_", " ").capitalize() for x in hypernyms
         ]
@@ -155,6 +155,8 @@ class Parser:
         Build a dictionary of information about a song from a given url.
 
         Add this dictionary to the dictionary of songs.
+
+        :param url: The URL of the song
         """
         title, lyrics = self._get_lyrics_and_title(url)
         words = self._prepare_lyrics(lyrics)
