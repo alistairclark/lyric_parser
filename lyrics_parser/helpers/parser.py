@@ -1,15 +1,13 @@
 from collections import Counter
-from functools import reduce
 import re
 from statistics import mean
 
 from nltk.corpus import wordnet
-import requests
 import requests_html
 from textblob import TextBlob
 from textblob import Word
 
-from helpers import STOP_WORDS
+from lyrics_parser.helpers.helpers import STOP_WORDS
 
 
 class Parser:

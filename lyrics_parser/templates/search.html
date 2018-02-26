@@ -1,0 +1,9 @@
+<div class="row">
+    <div class="col-sm" id="search-results">
+        <ul class="list-group-flush">
+        {% for key in data %}
+            <a href="{{ url_for('results', artist_id=key, artist_name=data[key]['name']) }}" class="list-group-item"><img class="search-result-image" src="{{ data[key]['image_url'] }}"><strong>{{ data[key]["name"] }}</strong></a>
+        {% endfor %}
+        </ul>
+    </div>
+</div>

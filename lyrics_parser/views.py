@@ -1,16 +1,13 @@
 import json
 
-from flask import Flask
 from flask import jsonify
 from flask import render_template
 from flask import request
 
-from helpers import search_genius
-from parser import Parser
-from song_list_builder import SongListBuilder
-
-
-app = Flask(__name__)
+from lyrics_parser.helpers.helpers import search_genius
+from lyrics_parser.helpers.parser import Parser
+from lyrics_parser.helpers.song_list_builder import SongListBuilder
+from lyrics_parser import app
 
 
 @app.route("/")

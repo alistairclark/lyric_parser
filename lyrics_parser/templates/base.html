@@ -15,9 +15,9 @@
     <body>
         <div class="container">
             <div class="row">
-                <div class="col-md" align="center" style="padding:50px 0;">
+                <div id="logo-wrapper" class="col-md" align="center">
                     <a class="display-4" href="{{ url_for('index') }}">
-                        <img src="{{ url_for ('static', filename='images/logo.png') }}" style="padding-right:20px;"/>
+                        <img id="logo" src="{{ url_for ('static', filename='images/logo.png') }}"/>
                        Lyric analyser
                     </a>
                 </div>

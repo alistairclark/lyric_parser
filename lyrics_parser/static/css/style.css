@@ -1,0 +1,54 @@
+/* Base.html */
+
+body {
+    background-color: #FCFCFC;
+}
+
+#logo-wrapper {
+    padding:50px 0;
+}
+
+#logo {
+    padding-right: 20px;
+}
+
+/* Search page */
+
+#search-results {
+    background-color: #FFE7BA;
+}
+
+a.list-group-item {
+    background-color:#FFE7BA;
+}
+
+img.search-result-image {
+    width:100px;
+    height:100px;
+    overflow:hidden;
+    margin: 50px;
+}
+
+/* Results page */
+
+#songList {
+    padding-top: 50px;
+}
+
+a:link, a:visited, a:hover {
+    color: #000000;
+    text-decoration: none;
+}
+
+li.result {
+    background-color: #FCFCFC
+}
+
+div.results-table {
+    padding: 50px;
+}
+
+#resultsChart {
+    padding: 50px;
+}
+
