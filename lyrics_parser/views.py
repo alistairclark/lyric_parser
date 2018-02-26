@@ -23,15 +23,39 @@ def search():
 
 @app.route("/results")
 def results():
+    """
+    Build list of songs by an artist. Display the results page and begin
+    populating it.
+
+    :param id: Genius.com's ID for the artist
+    :param artist_name: Name of the artist
+    """
     id = request.args.get('artist_id', '')
     artist_name = request.args.get('artist_name', '')
     song_list_builder = SongListBuilder(id)
-    data = song_list_builder.fetch_song_data()
+    data = song_list_builder.get_song_data()
 
-    return render_template("results.html", artist_name=artist_name, data=data, completed=0)
+    return render_template(
+        "results.html",
+        artist_name=artist_name,
+        data=data,
+        completed=0
+    )
 
 @app.route("/parse")
 def parse():
+    """
+    Get the current data from song analysis. Carry out analysis of the current
+    song. Update the data.
+
+    :param total_count: The total number of songs to be analysed
+    :param completed: The number of songs that have been analysed so far
+    :param url: The url of the song to be analysed now
+    :param songs: The full dictionary of song data
+
+    :return: Json payload including HTML to be presented on results page
+    and the current dictionary of songs.
+    """
     total_count = request.values["total_count"]
     completed = request.values["completed"]
     url = request.values["url"]
@@ -43,7 +67,7 @@ def parse():
         songs = {}
 
     parser = Parser(songs)
-    parser.get_lyrics(url)
+    parser.add_song(url)
 
     data = parser.process_all_lyrics()
 
@@ -59,4 +83,5 @@ def parse():
         "html": html,
         "songs": json.dumps(parser.songs)
     }
+
     return jsonify(payload)

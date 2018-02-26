@@ -11,6 +11,10 @@ from lyrics_parser.helpers.helpers import STOP_WORDS
 
 
 class Parser:
+    """
+    Build up a dictionary of information about songs by an artist
+    and process that information.
+    """
     def __init__(self, songs):
         # Set authorization header in order to use Genius API
         # (https://docs.genius.com/)
@@ -26,6 +30,7 @@ class Parser:
         session = requests_html.Session()
         session.headers = self.headers
         response = session.get(url)
+
         title = response.html.find(
             ".header_with_cover_art-primary_info-title",
             first=True
@@ -51,8 +56,8 @@ class Parser:
 
     def _prepare_lyrics(self, lyrics):
         """
-        Remove common English words from lyrics, remove blank items, and format
-        the remaining words.
+        Remove common English words from lyrics, remove blank items,
+        and format the remaining words.
         """
         uncommon_words = self._remove_common_words(lyrics)
         processed_string = list(map(
@@ -68,9 +73,11 @@ class Parser:
 
 
     def _analyse_sentiment(self, lyrics):
-        """
+        """ Analyse the overall positivty/negativity and
+        subjectivity/objectivity of the lyrics in a song.
+
         Break the lyrics down into TextBlob Sentence objects. Create a list
-        of the Sentiments for those Sentences. Return the mean polarity and
+        of Sentiments for those Sentences. Return the mean polarity and
         subjectivity of the song.
         """
         sentences = TextBlob(lyrics).sentences
@@ -87,7 +94,9 @@ class Parser:
         return mean_polarity, mean_subjectivity
 
     def _analyse_themes(self, lyrics):
-        """
+        """ Very roughly establish what concepts are commonly referred to
+        by this artist.
+
         Create a list of Synsets (http://www.nltk.org/howto/wordnet.html),
         find the most common hypernyms (https://en.wikipedia.org/wiki/Hyponymy_and_hypernymy),
         count them and return the 5 most common.
@@ -113,6 +122,10 @@ class Parser:
         return Counter(words)
 
     def _get_mean_polarity(self):
+        """
+        Calculate the mean polarity (positivity/negativity)
+        of all the songs in the dictionary.
+        """
         polarities = []
         for key, value in self.songs.items():
             if value["sentiment"][0] != '':
@@ -124,6 +137,9 @@ class Parser:
             return None
 
     def _get_mean_subjectivity(self):
+        """
+        Calculate the mean subjectivity of all the songs in the dictionary.
+        """
         subjectivities = []
         for key, value in self.songs.items():
             if value["sentiment"][1] != '':
@@ -134,7 +150,12 @@ class Parser:
         else:
             return None
 
-    def get_lyrics(self, url):
+    def add_song(self, url):
+        """
+        Build a dictionary of information about a song from a given url.
+
+        Add this dictionary to the dictionary of songs.
+        """
         title, lyrics = self._get_lyrics_and_title(url)
         words = self._prepare_lyrics(lyrics)
 
@@ -146,6 +167,14 @@ class Parser:
         }
 
     def process_all_lyrics(self):
+        """ Calculate general information about the songs.
+
+        Sum all of the word frequencies from each song. Get the mean
+        polarity and subjectivity of the songs. Sum all of the common
+        themes and again count them.
+
+        :return: A dictionary containing the above information
+        """
         counter = Counter([])
         for key, value in self.songs.items():
             counter += value["word frequencies"]
@@ -155,10 +184,9 @@ class Parser:
 
         themes = []
         for key, value in self.songs.items():
+            # Build a list of strings from the counted themes
             string_only = [theme[0] for theme in value["themes"]]
             themes.extend(string_only)
-
-        print(themes)
 
         data = {
             "word frequencies": counter.most_common(10),
