@@ -19,12 +19,11 @@ This project is yet to be deployed, but you can run it locally.
 
 ### Prerequisites
 
-You'll need to install [pipenv](https://github.com/pypa/pipenv) and install the requirements for this project
+You'll need to install [pipenv](https://github.com/pypa/pipenv) and create the virtual environment
 
 ```
 pip install pipenv
 pipenv --python 3.6
-pipenv shell
 ```
 
 ### Installing
@@ -32,7 +31,10 @@ pipenv shell
 You can now run Lyric Parser locally
 
 ```
+pipenv shell
+pipenv install
 export FLASK_APP=lyrics_parser
+pip install -e .
 flask run
 ```
 
