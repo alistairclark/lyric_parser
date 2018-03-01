@@ -28,7 +28,7 @@ pipenv --python 3.6
 
 ### Installing
 
-You can now run Lyric Parser locally
+You can now install the requirements, run the setup sciprt, and run Lyric Parser locally
 
 ```
 pipenv shell
