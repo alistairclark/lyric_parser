@@ -1,5 +1,6 @@
 import json
 
+from flask import Flask
 from flask import jsonify
 from flask import render_template
 from flask import request
@@ -7,8 +8,9 @@ from flask import request
 from lyrics_parser.helpers.helpers import search_genius
 from lyrics_parser.helpers.parser import Parser
 from lyrics_parser.helpers.song_list_builder import SongListBuilder
-from lyrics_parser import app
 
+
+app = Flask(__name__)
 
 @app.route("/")
 def index():
@@ -45,8 +47,9 @@ def results():
 @app.route("/parse")
 def parse():
     """
-    Get the current data from song analysis. Carry out analysis of the current
-    song. Update the data.
+    Get the data for the songs we've analysed so far. Carry out analysis of
+    the next song. Update the data. This view is called by a script which
+    runs in the results page.
 
     :param total_count: The total number of songs to be analysed
     :param completed: The number of songs that have been analysed so far

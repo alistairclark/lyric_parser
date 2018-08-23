@@ -2,6 +2,7 @@ from collections import Counter
 import re
 from statistics import mean
 
+import nltk
 from nltk.corpus import wordnet
 import requests_html
 from textblob import TextBlob
@@ -52,6 +53,10 @@ class Parser:
         return capitalized
 
     def _remove_common_words(self, lyrics):
+        """
+        Exclude common words by comparing lyrics to a list of Stop Words
+        (https://en.wikipedia.org/wiki/Stop_words)
+        """
         return [word for word in lyrics.split() if word.lower() not in STOP_WORDS]
 
     def _prepare_lyrics(self, lyrics):
@@ -70,7 +75,6 @@ class Parser:
         )
 
         return strip_blanks
-
 
     def _analyse_sentiment(self, lyrics):
         """ Analyse the overall positivty/negativity and
