@@ -1,3 +1,4 @@
+punkt
 brown
 reuters
 wordnet
