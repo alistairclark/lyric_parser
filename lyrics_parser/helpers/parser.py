@@ -4,7 +4,7 @@ from statistics import mean
 
 import nltk
 from nltk.corpus import wordnet
-import requests_html
+from requests_html import HTMLSession
 from textblob import TextBlob
 from textblob import Word
 
@@ -28,7 +28,7 @@ class Parser:
         self.songs = songs
 
     def _get_lyrics_and_title(self, url):
-        session = requests_html.Session()
+        session = HTMLSession()
         session.headers = self.headers
         response = session.get(url)
 

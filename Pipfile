@@ -1,13 +1,15 @@
 [[source]]
 url = "https://pypi.python.org/simple"
 verify_ssl = true
-[packages]
 
+[requires]
+python_version = "3.6"
+
+[packages]
 nltk = "*"
 requests-html = "*"
 textblob = "*"
 flask = "*"
 requests = "*"
 pytest = "*"
-
-
+gunicorn = "*"
