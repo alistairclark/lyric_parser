@@ -1,1 +1,1 @@
-web: gunicorn lyrics_parser:app
+web: gunicorn lyrics_parser.views:app
