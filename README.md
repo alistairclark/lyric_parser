@@ -1,5 +1,7 @@
 # Lyric Parser
 
+View the app [here](https://murmuring-crag-87940.herokuapp.com/).
+
 This is a simple Flask app which uses the [Genius API](https://docs.genius.com/) (and some scraping) to analyse the linguistic content of song lyrics.
 
 Search for an artist and Lyric Parser will tell you -
@@ -15,7 +17,7 @@ Search for an artist and Lyric Parser will tell you -
 
 # Getting started
 
-This project is yet to be deployed, but you can run it locally.
+If you want to run the site locally..
 
 ### Prerequisites
 
@@ -33,7 +35,7 @@ You can now install the requirements, run the setup sciprt, and run Lyric Parser
 ```
 pipenv shell
 pipenv install
-export FLASK_APP=lyrics_parser
+export FLASK_APP=lyrics_parser.views:app
 pip install -e .
 flask run
 ```
