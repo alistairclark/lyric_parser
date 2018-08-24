@@ -12,7 +12,8 @@ textblob = "*"
 flask = "*"
 requests = "*"
 gunicorn = "*"
+celery = "*"
+redis = "*"
 
 [dev-packages]
-honcho = "*"
 pytest = "*"

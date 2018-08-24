@@ -16,7 +16,7 @@
             url: urls[i]
         };
 
-        $.getJSON("{{ url_for('parse') }}", data, function(result) {
+        $.getJSON("{{ url_for('views.parse') }}", data, function(result) {
             var output = $("#results");
             output.html(result["html"]);
 

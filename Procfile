@@ -1,1 +1,2 @@
-web: gunicorn lyrics_parser.views:app
+web: gunicorn lyrics_parser:app
+worker: celery worker --app=lyrics_parser:celery

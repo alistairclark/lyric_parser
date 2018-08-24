@@ -1,29 +1,26 @@
 import json
 
-from flask import Flask
-from flask import jsonify
-from flask import render_template
-from flask import request
+from flask import (Flask, jsonify, render_template, request, Blueprint)
 
 from lyrics_parser.helpers.helpers import search_genius
 from lyrics_parser.helpers.parser import Parser
 from lyrics_parser.helpers.song_list_builder import SongListBuilder
 
 
-app = Flask(__name__)
+bp = Blueprint('views', __name__, url_prefix='/')
 
-@app.route("/")
+@bp.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/search")
+@bp.route("/search")
 def search():
     searchword = request.args.get('q', '')
     data = search_genius(searchword)
 
     return render_template("search.html", data=data)
 
-@app.route("/results")
+@bp.route("/results")
 def results():
     """
     Build list of songs by an artist. Display the results page and begin
@@ -44,7 +41,7 @@ def results():
         completed=0
     )
 
-@app.route("/parse")
+@bp.route("/parse")
 def parse():
     """
     Get the data for the songs we've analysed so far. Carry out analysis of

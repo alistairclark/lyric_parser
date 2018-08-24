@@ -26,7 +26,7 @@ $("#artistName").keyup(
             if (input.length > 1) {
                 var request = $.ajax({
                     type: "GET",
-                    url: "{{ url_for ('search') }}?q=" + input,
+                    url: "{{ url_for ('views.search') }}?q=" + input,
                     success: function(result) {
                         var output = $("#results");
                         output.html(result);
