@@ -11,5 +11,8 @@ requests-html = "*"
 textblob = "*"
 flask = "*"
 requests = "*"
-pytest = "*"
 gunicorn = "*"
+
+[dev-packages]
+honcho = "*"
+pytest = "*"
